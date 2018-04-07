@@ -575,20 +575,28 @@ $(function(){
 	});
 	$(window).resize(arrange_windows);
 	
-	var file_start = window.location.href.indexOf(filename);
-	if(file_start > -1)
+	if(window.location.href == "https://nick-kree.github.io/better-multi-twitch/")
 	{
-		var params = window.location.href.substring(file_start + filename.length);
-		url_path = window.location.href.substring(0, file_start);
-		var slash_delimated = params.split("/");
-		for(var i in slash_delimated)
-		{
-			if(slash_delimated[i] != "")
-			{
-				add_stream(slash_delimated[i]);
-			}
-		}
+		url_path = window.location.href;
+		filename = "index.html";
 	}
 	else
-		alert("var filename is not set correctly. Change it by editing this file; it's near the top. It should just be the name of this file. Without this value set correctly, the page can not load streams automatically from the ones listed in the URL bar, nor update the URL bar to reflect the currently viewed streams.");
+	{
+		var file_start = window.location.href.indexOf(filename);
+		if(file_start > -1)
+		{
+			var params = window.location.href.substring(file_start + filename.length);
+			url_path = window.location.href.substring(0, file_start);
+			var slash_delimated = params.split("/");
+			for(var i in slash_delimated)
+			{
+				if(slash_delimated[i] != "")
+				{
+					add_stream(slash_delimated[i]);
+				}
+			}
+		}
+		else
+			alert("var filename is not set correctly. Change it by editing this file; it's near the top. It should just be the name of this file. Without this value set correctly, the page can not load streams automatically from the ones listed in the URL bar, nor update the URL bar to reflect the currently viewed streams.");
+	}
 });
