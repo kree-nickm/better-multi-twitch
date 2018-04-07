@@ -1,5 +1,5 @@
 // If a different file name is used, change it here.
-var filename = "twitch.html";
+var filename = "index.html";
 
 // You can change these if you think you need to. They should only be things that are not valid characters of a streamer's name.
 // Chat suffix is checked first, in case you want them to use the same characters.
