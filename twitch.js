@@ -576,7 +576,7 @@ $(function(){
 	});
 	$(window).resize(arrange_windows);
 	
-	if(window.location.href == "https://nick-kree.github.io/better-multi-twitch/")
+	if(window.location.href == "https://kree-nickm.github.io/better-multi-twitch/")
 	{
 		url_path = window.location.href;
 		filename = "index.html";

@@ -3,7 +3,7 @@ A multiple Twitch.tv stream viewer with robust viewing options, stream layouts, 
 
 **I suspect one day Twitch will remove legacy chat as well, but until then, rejoyce.*
 
-To actually use the app, go here: https://nick-kree.github.io/better-multi-twitch/
+To actually use the app, go here: https://kree-nickm.github.io/better-multi-twitch/
 
 You can also download it and use it on your computer if you feel like it. You just need the HTML, JS, and CSS files in the same directory. Might be useful if you've got improvements you'd like to make. Maybe one day I will allow contributors, and you can show them off.
 
