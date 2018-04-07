@@ -582,7 +582,6 @@ $(function(){
 	}
 	else
 	{
-		console.log(window.location.href);
 		var file_start = window.location.href.indexOf(filename);
 		if(file_start > -1)
 		{
