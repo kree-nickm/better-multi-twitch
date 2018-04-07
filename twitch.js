@@ -45,7 +45,7 @@ function add_stream(stream)
 	}
 	if(!skipvideo && $("#video_"+ stream).length == 0)
 	{
-		$("body").append('<div id="video_'+ stream +'" class="iframe video" style="height:720px;width:1280px;"><iframe src="http://player.twitch.tv/?'+ (vod?'video':'channel') +'='+ stream +'" height="720" width="1280" frameborder="0" scrolling="no" allowfullscreen="false"></iframe></div>');
+		$("body").append('<div id="video_'+ stream +'" class="iframe video" style="height:720px;width:1280px;"><iframe src="https://player.twitch.tv/?'+ (vod?'video':'channel') +'='+ stream +'" height="720" width="1280" frameborder="0" scrolling="no" allowfullscreen="false"></iframe></div>');
 		$("#stream_list").append('<div class="stream-list-item">video_'+ stream +'<button id="remove_video_'+ stream +'">Remove</button></div>');
 		$("#remove_video_"+ stream).click(remove_window);
 	}
