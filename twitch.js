@@ -5,6 +5,7 @@ var filename = "index.html";
 // Chat suffix is checked first, in case you want them to use the same characters.
 var nochat_suffix = "--";
 var novideo_suffix = "-";
+var stream_delimiter = "#";
 
 var url_path;
 function update_URL_bar()
@@ -15,14 +16,14 @@ function update_URL_bar()
 	$("div.iframe.video").each(function(i,elem){
 		var stream = elem.id.substr(6);
 		var vod = !isNaN(stream);
-		newURL = newURL + "/" + stream;
+		newURL = newURL + stream_delimiter + stream;
 		if($("#chat_"+ stream).length == 0 && !vod)
 			newURL = newURL + nochat_suffix;
 	});
 	$("div.iframe.chat").each(function(i,elem){
 		var stream = elem.id.substr(5);
 		if($("#video_"+ stream).length == 0)
-			newURL = newURL + "/" + stream + novideo_suffix;
+			newURL = newURL + stream_delimiter + stream + novideo_suffix;
 	});
 	window.history.pushState({}, "", newURL);
 	return true;
@@ -587,12 +588,12 @@ $(function(){
 		{
 			var params = window.location.href.substring(file_start + filename.length);
 			url_path = window.location.href.substring(0, file_start);
-			var slash_delimated = params.split("/");
-			for(var i in slash_delimated)
+			var delimited_streams = params.split(stream_delimiter);
+			for(var i in delimited_streams)
 			{
-				if(slash_delimated[i] != "")
+				if(delimited_streams[i] != "")
 				{
-					add_stream(slash_delimated[i]);
+					add_stream(delimited_streams[i]);
 				}
 			}
 		}
