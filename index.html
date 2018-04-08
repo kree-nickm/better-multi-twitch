@@ -2,6 +2,7 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Better Multi-Twitch</title>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css"/>
 <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
@@ -10,11 +11,16 @@
 </head>
 <body>
 	<div id="options">
-		Open Stream: <input type="text" id="add_stream" placeholder="channel"/>
+		Open Stream: <input type="text" id="add_stream" placeholder="channel or VOD ID#"/>
 		<hr/>
 		Current Open Windows:
 		<div id="stream_list">
 		</div>
+		<hr/>
+		Placement Algorithm:<br/>
+		<input type="radio" name="layout_algorithm" id="layout_space" checked/> Minimize Blank Space<br/>
+		<input type="radio" name="layout_algorithm" id="layout_video"/> Maximize Video Size<br/>
+		<input type="radio" name="layout_algorithm" id="layout_manual"/> Place Manually
 		<hr/>
 		Press <i>Escape</i> or click anywhere outside of a window to open these options. <i>Note:</i> You may need to click on the browser title bar before pressing Escape.
 	</div>

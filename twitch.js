@@ -25,7 +25,7 @@ function update_URL_bar()
 		if($("#video_"+ stream).length == 0)
 			newURL = newURL + stream_delimiter + stream + novideo_suffix;
 	});
-	window.history.pushState({}, "", newURL);
+	window.history.replaceState({}, "", newURL);
 	return true;
 }
 
@@ -47,24 +47,26 @@ function add_stream(stream)
 	if(!skipvideo && $("#video_"+ stream).length == 0)
 	{
 		$("body").append('<div id="video_'+ stream +'" class="iframe video" style="height:720px;width:1280px;"><iframe src="https://player.twitch.tv/?'+ (vod?'video':'channel') +'='+ stream +'" height="720" width="1280" frameborder="0" scrolling="no" allowfullscreen="false"></iframe></div>');
-		$("#stream_list").append('<div class="stream-list-item">video_'+ stream +'<button id="remove_video_'+ stream +'">Remove</button></div>');
+		$("#stream_list").append('<div class="stream-list-item">video_'+ stream +'<button id="remove_video_'+ stream +'">Remove</button><button id="add_chat_'+ stream +'">Add Chat</button></div>');
 		$("#remove_video_"+ stream).click(remove_window);
+		$("#add_chat_"+ stream).click(function(e){add_stream(stream);});
 	}
 	if(!skipchat && $("#chat_"+ stream).length == 0)
 	{
 		$("body").append('<div id="chat_'+ stream +'" class="iframe chat" style="height:720px;width:350px;"><iframe frameborder="0" scrolling="no" id="'+ stream +'" src="https://www.twitch.tv/'+ stream +'/chat?popout=" height="720" width="350"></iframe></div>');
-		$("#stream_list").append('<div class="stream-list-item">chat_'+ stream +'<button id="remove_chat_'+ stream +'">Remove</button></div>');
+		$("#stream_list").append('<div class="stream-list-item">chat_'+ stream +'<button id="remove_chat_'+ stream +'">Remove</button><button id="add_video_'+ stream +'">Add Video</button></div>');
 		$("#remove_chat_"+ stream).click(remove_window);
+		$("#add_video_"+ stream).click(function(e){add_stream(stream);});
 	}
 	setup_windows();
-	arrange_windows();
+	stream_changed(stream);
 }
 
 // Call after new HTML elements are added to the page. Adds the necessary jQuery callbacks and functionality to any new video/chat elements.
 function setup_windows()
 {
 	$("div.iframe").each(function(i,element){
-		/*if(!$(element).hasClass("ui-draggable"))
+		if(!$(element).hasClass("ui-draggable"))
 		{
 			$(element).draggable({
 				cancel: "input,textarea,button,select,option,iframe",
@@ -74,12 +76,12 @@ function setup_windows()
 				stack: "div.iframe",
 				iframeFix: true
 			});
-		}*/
+		}
 		if(!$(element).hasClass("ui-resizable"))
 		{
 			var iframe = $(element).children("iframe");
 			$(element).prop("iframe", iframe);
-			/*$(element).resizable({
+			$(element).resizable({
 				cancel: "input,textarea,button,select,option,iframe",
 				handles: "all",
 				distance: 0,
@@ -92,7 +94,7 @@ function setup_windows()
 				resize: function(event, ui){
 					$(element).prop("iframe").attr("height", ui.size.height-$(element).prop("height_buffer")).attr("width", ui.size.width-$(element).prop("width_buffer"));
 				}
-			});*/
+			});
 		}
 	});
 }
@@ -335,12 +337,18 @@ function get_best_layout(layouts_arr)
 	var best = layouts_arr[0];
 	for(var i=1; i<layouts_arr.length; i++)
 	{
-		var blankspace_comparison = best.get_unused_space() - layouts_arr[i].get_unused_space();
 		var video_comparison = best.get_main_video_space() - layouts_arr[i].get_main_video_space();
-		//if(blankspace_comparison > 0 || blankspace_comparison == 0 && video_comparison < 0)
-		//	best = layouts_arr[i];
-		if(video_comparison < 0)
-			best = layouts_arr[i];
+		if($("#layout_space:checked").length > 0)
+		{
+			var blankspace_comparison = best.get_unused_space() - layouts_arr[i].get_unused_space();
+			if(blankspace_comparison > 0 || blankspace_comparison == 0 && video_comparison < 0)
+				best = layouts_arr[i];
+		}
+		else
+		{
+			if(video_comparison < 0)
+				best = layouts_arr[i];
+		}
 	}
 	return best;
 }
@@ -353,7 +361,10 @@ function arrange_windows()
 	var num_videos = $("div.iframe.video").length;
 	var num_chats = $("div.iframe.chat").length;
 	var local_chat_max_width = Math.min(chat_max_width, $(window).width());
-	if(num_videos == 0)
+	if($("#layout_manual:checked").length > 0)
+	{
+	}
+	else if(num_videos == 0)
 	{
 		local_chat_max_width = Math.min(chat_max_width, $(window).width() / num_chats);
 		var layout = LayoutManagerFactory(num_videos, num_chats, 0);
@@ -545,13 +556,26 @@ function add_stream_input()
 		add_stream($("#add_stream").val());
 	}
 	$("#add_stream").val("");
-	update_URL_bar();
 }
 
 function remove_window()
 {
 	$(this).parent().remove();
-	$("#"+ this.id.substring(7)).remove();
+	var temp = this.id.substring(7);
+	$("#"+ temp).remove();
+	stream_changed(temp.substring(temp.indexOf("_") + 1));
+}
+
+function stream_changed(stream)
+{
+	if($("#chat_"+ stream).length == 0)
+		$("#add_chat_"+ stream).show();
+	else
+		$("#add_chat_"+ stream).hide();
+	if($("#video_"+ stream).length == 0)
+		$("#add_video_"+ stream).show();
+	else
+		$("#add_video_"+ stream).hide();
 	arrange_windows();
 	update_URL_bar();
 }
@@ -575,6 +599,7 @@ $(function(){
 			$("#options").dialog("open");
 	});
 	$(window).resize(arrange_windows);
+	$("input[name=\"layout_algorithm\"]").change(arrange_windows);
 	
 	if(window.location.href == "https://kree-nickm.github.io/better-multi-twitch/")
 	{
