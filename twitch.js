@@ -415,32 +415,53 @@ function arrange_windows()
 	}
 	else if(num_videos == 2)
 	{
-		local_chat_max_width = Math.min(chat_max_width, $(window).width() / 3);
-		var video_size = get_widescreen_dimensions_by_height(Math.floor($(window).height()/2), Math.floor($(window).width() - 2*local_chat_max_width));
-		// alternatively, if the window is excessively wider than it is tall, we can arrange the videos side by side instead of one above the other
-		if($(window).width() > video_size[0]*2 + local_chat_max_width*2)
-			video_size = get_widescreen_dimensions(Math.floor(($(window).width() - 2*local_chat_max_width) / 2), $(window).height());
-		
-		set_dimensions(
-			$("div.iframe.video").eq(0),
-			[local_chat_max_width, 0],
-			video_size
-		);
-		set_dimensions(
-			$("div.iframe.chat").eq(0),
-			[0, 0],
-			[local_chat_max_width, $(window).height()]
-		);
-		set_dimensions(
-			$("div.iframe.video").eq(1),
-			[$(window).width()-local_chat_max_width-video_size[0], $(window).height()-video_size[1]],
-			video_size
-		);
-		set_dimensions(
-			$("div.iframe.chat").eq(1),
-			[$(window).width()-local_chat_max_width, 0],
-			[local_chat_max_width, $(window).height()]
-		);
+		var layouts = [];
+		if(num_chats == 0)
+		{
+			layouts[0] = LayoutManagerFactory(num_videos, num_chats, "horiz");
+			layouts[0].set_video_size(0, get_widescreen_dimensions($(window).width()/2, $(window).height()));
+			layouts[0].set_video_position(0, [0, ($(window).height()-layouts[0].get_video_height(0))/2]);
+			layouts[0].set_video_size(1, get_widescreen_dimensions($(window).width()/2, $(window).height()));
+			layouts[0].set_video_position(1, [layouts[0].get_video_width(0), ($(window).height()-layouts[0].get_video_height(1))/2]);
+			layouts[1] = LayoutManagerFactory(num_videos, num_chats, "vert");
+			layouts[1].set_video_size(0, get_widescreen_dimensions($(window).width(), $(window).height()/2));
+			layouts[1].set_video_position(0, [0, 0]);
+			layouts[1].set_video_size(1, get_widescreen_dimensions($(window).width(), $(window).height()/2));
+			layouts[1].set_video_position(1, [0, layouts[1].get_video_height(0)]);
+			get_best_layout(layouts).apply();
+		}
+		else if(num_chats == 1)
+		{
+		}
+		else
+		{
+			local_chat_max_width = Math.min(chat_max_width, $(window).width() / 3);
+			var video_size = get_widescreen_dimensions_by_height(Math.floor($(window).height()/2), Math.floor($(window).width() - 2*local_chat_max_width));
+			// alternatively, if the window is excessively wider than it is tall, we can arrange the videos side by side instead of one above the other
+			if($(window).width() > video_size[0]*2 + local_chat_max_width*2)
+				video_size = get_widescreen_dimensions(Math.floor(($(window).width() - 2*local_chat_max_width) / 2), $(window).height());
+			
+			set_dimensions(
+				$("div.iframe.video").eq(0),
+				[local_chat_max_width, 0],
+				video_size
+			);
+			set_dimensions(
+				$("div.iframe.chat").eq(0),
+				[0, 0],
+				[local_chat_max_width, $(window).height()]
+			);
+			set_dimensions(
+				$("div.iframe.video").eq(1),
+				[$(window).width()-local_chat_max_width-video_size[0], $(window).height()-video_size[1]],
+				video_size
+			);
+			set_dimensions(
+				$("div.iframe.chat").eq(1),
+				[$(window).width()-local_chat_max_width, 0],
+				[local_chat_max_width, $(window).height()]
+			);
+		}
 	}
 	else if(num_videos == 3)
 	{
