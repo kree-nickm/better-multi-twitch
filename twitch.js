@@ -99,6 +99,25 @@ function setup_windows()
 	});
 }
 
+function set_window_grid(dimensions)
+{
+	$("div.iframe")
+		.draggable("option", "grid", dimensions)
+		.resizable("option", "grid", dimensions)
+		.each(function(i,element){
+			$(element)
+				.css("left", (Math.round($(element).position().left/dimensions[0])*dimensions[0])+"px")
+				.css("top", (Math.round($(element).position().top/dimensions[1])*dimensions[1])+"px")
+				.css("width", (Math.round($(element).width()/dimensions[0])*dimensions[0])+"px")
+				.css("height", (Math.round($(element).height()/dimensions[1])*dimensions[1])+"px")
+				.prop("iframe")
+					.attr("width", (Math.round($(element).width()/dimensions[0])*dimensions[0]))
+					.attr("height", (Math.round($(element).height()/dimensions[1])*dimensions[1]))
+			;
+		})
+	;
+}
+
 function set_dimensions(jqI, position, size)
 {
 	jqI.css("left", (position[0]-10)+"px")
@@ -363,188 +382,198 @@ function arrange_windows()
 	var local_chat_max_width = Math.min(chat_max_width, $(window).width());
 	if($("#layout_manual:checked").length > 0)
 	{
+		$("div.iframe")
+			.draggable("enable")
+			.resizable("enable");
+		set_window_grid([Math.max(1,parseInt($("#grid_x").val())|0), Math.max(1,parseInt($("#grid_y").val())|0)]);
 	}
-	else if(num_videos == 0)
+	else
 	{
-		local_chat_max_width = Math.min(chat_max_width, $(window).width() / num_chats);
-		var layout = LayoutManagerFactory(num_videos, num_chats, 0);
-		for(var i=0; i<num_chats; i++)
+		$("div.iframe")
+			.draggable("disable")
+			.resizable("disable");
+		if(num_videos == 0)
 		{
-			layout.set_chat_size(i, [local_chat_max_width, $(window).height()]);
-			layout.set_chat_position(i, [(i==0?0:layout.get_chat_right(i-1)), 0]);
-		}
-		layout.apply();
-	}
-	else if(num_videos == 1)
-	{
-		var layouts = [];			
-		for(var L=0; L<=num_chats; L++)
-		{
-			local_chat_max_width = Math.min(chat_max_width, $(window).width()/(num_chats+(L?0:1)));
-			layouts[L] = LayoutManagerFactory(num_videos, num_chats, L);
-			layouts[L].set_video_size(0, get_widescreen_dimensions($(window).width()-local_chat_max_width*(num_chats-L), $(window).height()-(L>0 ? chat_min_height : 0)));
-			if(L > 0)
-				layouts[L].set_video_position(0, [(L<num_chats ? local_chat_max_width : 0), 0]);
+			local_chat_max_width = Math.min(chat_max_width, $(window).width() / num_chats);
+			var layout = LayoutManagerFactory(num_videos, num_chats, 0);
 			for(var i=0; i<num_chats; i++)
 			{
-				var chat_x;
-				if(i==0 && num_chats>L) // num_chats>L means at least one chat is beside the video. If this is the first chat, it's the only one on the left.
-					chat_x = 0;
-				else if(i == num_chats-L) // num_chats-L corresponds to the first chat index "i" that goes under the video, and thus gets centered in the space beneath
-					chat_x = (i>0?layouts[L].get_chat_right(0):0) + Math.max(0, (layouts[L].get_video_width(0)-local_chat_max_width*L)/2);
-				else if(i==1 && i<num_chats-L) // if this is the second chat and it's still beside the video, it snaps to the video's right, or the bottom chats' right if that's wider
-					chat_x = (layouts[L].get_video_width(0)>local_chat_max_width*L ? layouts[L].get_video_right(0) : layouts[L].get_video_x(0)+local_chat_max_width*L);
-				else // all other chats just snap next to the previous chat
-					chat_x = layouts[L].get_chat_right(i-1);
-				
-				layouts[L].set_chat(i, [
-					chat_x,
-					(i<num_chats-L ? 0 : layouts[L].get_video_height(0)),
-					local_chat_max_width,
-					$(window).height()-(i>=num_chats-L ? layouts[L].get_video_height(0) : 0)
-				]);
-				// If the window is REALLY short and wide for some reason (layout #0 to the extreme), the chats will be smaller than local_chat_max_width,
-				// so video size needs to be recalculated now that we know how wide chats are going to be (since they should all be the same width in layout #0).
-				if(i==0 && L == 0)
-					layouts[L].set_video_size(0, get_widescreen_dimensions($(window).width()-layouts[L].get_chat_width(0)*num_chats, $(window).height()));
+				layout.set_chat_size(i, [local_chat_max_width, $(window).height()]);
+				layout.set_chat_position(i, [(i==0?0:layout.get_chat_right(i-1)), 0]);
 			}
-			if(L == 0)
-				layouts[L].set_video_position(0, [(L<num_chats ? layouts[L].get_chat_right(0) : 0), ($(window).height()-layouts[L].get_video_height(0))/2]);
+			layout.apply();
 		}
-		get_best_layout(layouts).apply();
-	}
-	else if(num_videos == 2)
-	{
-		var layouts = [];
-		if(num_chats == 0)
+		else if(num_videos == 1)
 		{
-			layouts[0] = LayoutManagerFactory(num_videos, num_chats, "horiz");
-			layouts[0].set_video_size(0, get_widescreen_dimensions($(window).width()/2, $(window).height()));
-			layouts[0].set_video_position(0, [0, ($(window).height()-layouts[0].get_video_height(0))/2]);
-			layouts[0].set_video_size(1, get_widescreen_dimensions($(window).width()/2, $(window).height()));
-			layouts[0].set_video_position(1, [layouts[0].get_video_width(0), ($(window).height()-layouts[0].get_video_height(1))/2]);
-			layouts[1] = LayoutManagerFactory(num_videos, num_chats, "vert");
-			layouts[1].set_video_size(0, get_widescreen_dimensions($(window).width(), $(window).height()/2));
-			layouts[1].set_video_position(0, [0, 0]);
-			layouts[1].set_video_size(1, get_widescreen_dimensions($(window).width(), $(window).height()/2));
-			layouts[1].set_video_position(1, [0, layouts[1].get_video_height(0)]);
+			var layouts = [];			
+			for(var L=0; L<=num_chats; L++)
+			{
+				local_chat_max_width = Math.min(chat_max_width, $(window).width()/(num_chats+(L?0:1)));
+				layouts[L] = LayoutManagerFactory(num_videos, num_chats, L);
+				layouts[L].set_video_size(0, get_widescreen_dimensions($(window).width()-local_chat_max_width*(num_chats-L), $(window).height()-(L>0 ? chat_min_height : 0)));
+				if(L > 0)
+					layouts[L].set_video_position(0, [(L<num_chats ? local_chat_max_width : 0), 0]);
+				for(var i=0; i<num_chats; i++)
+				{
+					var chat_x;
+					if(i==0 && num_chats>L) // num_chats>L means at least one chat is beside the video. If this is the first chat, it's the only one on the left.
+						chat_x = 0;
+					else if(i == num_chats-L) // num_chats-L corresponds to the first chat index "i" that goes under the video, and thus gets centered in the space beneath
+						chat_x = (i>0?layouts[L].get_chat_right(0):0) + Math.max(0, (layouts[L].get_video_width(0)-local_chat_max_width*L)/2);
+					else if(i==1 && i<num_chats-L) // if this is the second chat and it's still beside the video, it snaps to the video's right, or the bottom chats' right if that's wider
+						chat_x = (layouts[L].get_video_width(0)>local_chat_max_width*L ? layouts[L].get_video_right(0) : layouts[L].get_video_x(0)+local_chat_max_width*L);
+					else // all other chats just snap next to the previous chat
+						chat_x = layouts[L].get_chat_right(i-1);
+					
+					layouts[L].set_chat(i, [
+						chat_x,
+						(i<num_chats-L ? 0 : layouts[L].get_video_height(0)),
+						local_chat_max_width,
+						$(window).height()-(i>=num_chats-L ? layouts[L].get_video_height(0) : 0)
+					]);
+					// If the window is REALLY short and wide for some reason (layout #0 to the extreme), the chats will be smaller than local_chat_max_width,
+					// so video size needs to be recalculated now that we know how wide chats are going to be (since they should all be the same width in layout #0).
+					if(i==0 && L == 0)
+						layouts[L].set_video_size(0, get_widescreen_dimensions($(window).width()-layouts[L].get_chat_width(0)*num_chats, $(window).height()));
+				}
+				if(L == 0)
+					layouts[L].set_video_position(0, [(L<num_chats ? layouts[L].get_chat_right(0) : 0), ($(window).height()-layouts[L].get_video_height(0))/2]);
+			}
 			get_best_layout(layouts).apply();
 		}
-		else if(num_chats == 1)
+		else if(num_videos == 2)
 		{
+			var layouts = [];
+			if(num_chats == 0)
+			{
+				layouts[0] = LayoutManagerFactory(num_videos, num_chats, "horiz");
+				layouts[0].set_video_size(0, get_widescreen_dimensions($(window).width()/2, $(window).height()));
+				layouts[0].set_video_position(0, [0, ($(window).height()-layouts[0].get_video_height(0))/2]);
+				layouts[0].set_video_size(1, get_widescreen_dimensions($(window).width()/2, $(window).height()));
+				layouts[0].set_video_position(1, [layouts[0].get_video_width(0), ($(window).height()-layouts[0].get_video_height(1))/2]);
+				layouts[1] = LayoutManagerFactory(num_videos, num_chats, "vert");
+				layouts[1].set_video_size(0, get_widescreen_dimensions($(window).width(), $(window).height()/2));
+				layouts[1].set_video_position(0, [0, 0]);
+				layouts[1].set_video_size(1, get_widescreen_dimensions($(window).width(), $(window).height()/2));
+				layouts[1].set_video_position(1, [0, layouts[1].get_video_height(0)]);
+				get_best_layout(layouts).apply();
+			}
+			else if(num_chats == 1)
+			{
+			}
+			else
+			{
+				local_chat_max_width = Math.min(chat_max_width, $(window).width() / 3);
+				var video_size = get_widescreen_dimensions_by_height(Math.floor($(window).height()/2), Math.floor($(window).width() - 2*local_chat_max_width));
+				// alternatively, if the window is excessively wider than it is tall, we can arrange the videos side by side instead of one above the other
+				if($(window).width() > video_size[0]*2 + local_chat_max_width*2)
+					video_size = get_widescreen_dimensions(Math.floor(($(window).width() - 2*local_chat_max_width) / 2), $(window).height());
+				
+				set_dimensions(
+					$("div.iframe.video").eq(0),
+					[local_chat_max_width, 0],
+					video_size
+				);
+				set_dimensions(
+					$("div.iframe.chat").eq(0),
+					[0, 0],
+					[local_chat_max_width, $(window).height()]
+				);
+				set_dimensions(
+					$("div.iframe.video").eq(1),
+					[$(window).width()-local_chat_max_width-video_size[0], $(window).height()-video_size[1]],
+					video_size
+				);
+				set_dimensions(
+					$("div.iframe.chat").eq(1),
+					[$(window).width()-local_chat_max_width, 0],
+					[local_chat_max_width, $(window).height()]
+				);
+			}
 		}
-		else
+		else if(num_videos == 3)
 		{
-			local_chat_max_width = Math.min(chat_max_width, $(window).width() / 3);
-			var video_size = get_widescreen_dimensions_by_height(Math.floor($(window).height()/2), Math.floor($(window).width() - 2*local_chat_max_width));
-			// alternatively, if the window is excessively wider than it is tall, we can arrange the videos side by side instead of one above the other
-			if($(window).width() > video_size[0]*2 + local_chat_max_width*2)
-				video_size = get_widescreen_dimensions(Math.floor(($(window).width() - 2*local_chat_max_width) / 2), $(window).height());
-			
+			var video_size = get_widescreen_dimensions_by_height(Math.floor($(window).height()/2), Math.floor($(window).width()/2));
+			// chats need to be divided among the last quadrant of the window
+			local_chat_max_width = Math.min(chat_max_width, ($(window).width()-video_width) / 3 - 10);
+			//TODO: triple streams gets pretty complicated with available space
 			set_dimensions(
 				$("div.iframe.video").eq(0),
-				[local_chat_max_width, 0],
+				[0, 0],
 				video_size
 			);
 			set_dimensions(
 				$("div.iframe.chat").eq(0),
-				[0, 0],
-				[local_chat_max_width, $(window).height()]
+				[$(window).width()-local_chat_max_width*3-20, video_size[1]],
+				[local_chat_max_width, video_size[1]]
 			);
 			set_dimensions(
 				$("div.iframe.video").eq(1),
-				[$(window).width()-local_chat_max_width-video_size[0], $(window).height()-video_size[1]],
+				[video_size[0], 0],
 				video_size
 			);
 			set_dimensions(
 				$("div.iframe.chat").eq(1),
-				[$(window).width()-local_chat_max_width, 0],
-				[local_chat_max_width, $(window).height()]
+				[$(window).width()-local_chat_max_width*2-10, video_size[1]],
+				[local_chat_max_width, video_size[1]]
+			);
+			set_dimensions(
+				$("div.iframe.video").eq(2),
+				[0, video_size[1]],
+				video_size
+			);
+			set_dimensions(
+				$("div.iframe.chat").eq(2),
+				[$(window).width()-local_chat_max_width, video_size[1]],
+				[local_chat_max_width, video_size[1]]
 			);
 		}
-	}
-	else if(num_videos == 3)
-	{
-		var video_size = get_widescreen_dimensions_by_height(Math.floor($(window).height()/2), Math.floor($(window).width()/2));
-		// chats need to be divided among the last quadrant of the window
-		local_chat_max_width = Math.min(chat_max_width, ($(window).width()-video_width) / 3 - 10);
-		//TODO: triple streams gets pretty complicated with available space
-		set_dimensions(
-			$("div.iframe.video").eq(0),
-			[0, 0],
-			video_size
-		);
-		set_dimensions(
-			$("div.iframe.chat").eq(0),
-			[$(window).width()-local_chat_max_width*3-20, video_size[1]],
-			[local_chat_max_width, video_size[1]]
-		);
-		set_dimensions(
-			$("div.iframe.video").eq(1),
-			[video_size[0], 0],
-			video_size
-		);
-		set_dimensions(
-			$("div.iframe.chat").eq(1),
-			[$(window).width()-local_chat_max_width*2-10, video_size[1]],
-			[local_chat_max_width, video_size[1]]
-		);
-		set_dimensions(
-			$("div.iframe.video").eq(2),
-			[0, video_size[1]],
-			video_size
-		);
-		set_dimensions(
-			$("div.iframe.chat").eq(2),
-			[$(window).width()-local_chat_max_width, video_size[1]],
-			[local_chat_max_width, video_size[1]]
-		);
-	}
-	else if(num_videos == 4)
-	{
-		local_chat_max_width = Math.min(chat_max_width, $(window).width() / 4);
-		var video_size = get_widescreen_dimensions_by_height(Math.floor($(window).height()/2), Math.floor($(window).width()/2));
-		//TODO: a lot, this is not at all designed to work with chats visible
-		set_dimensions(
-			$("div.iframe.video").eq(0),
-			[0, 0],
-			video_size
-		);
-		set_dimensions(
-			$("div.iframe.chat").eq(0),
-			[0, video_size[1]*2],
-			[local_chat_max_width, 540]
-		);
-		set_dimensions(
-			$("div.iframe.video").eq(1),
-			[video_size[0], 0],
-			video_size
-		);
-		set_dimensions(
-			$("div.iframe.chat").eq(1),
-			[local_chat_max_width, video_size[1]*2],
-			[local_chat_max_width, 540]
-		);
-		set_dimensions(
-			$("div.iframe.video").eq(2),
-			[0, video_size[1]],
-			video_size
-		);
-		set_dimensions(
-			$("div.iframe.chat").eq(2),
-			[local_chat_max_width*2, video_size[1]*2],
-			[local_chat_max_width, 540]
-		);
-		set_dimensions(
-			$("div.iframe.video").eq(3),
-			video_size,
-			video_size
-		);
-		set_dimensions(
-			$("div.iframe.chat").eq(3),
-			[local_chat_max_width*3, video_size[1]*2],
-			[local_chat_max_width, 540]
-		);
+		else if(num_videos == 4)
+		{
+			local_chat_max_width = Math.min(chat_max_width, $(window).width() / 4);
+			var video_size = get_widescreen_dimensions_by_height(Math.floor($(window).height()/2), Math.floor($(window).width()/2));
+			//TODO: a lot, this is not at all designed to work with chats visible
+			set_dimensions(
+				$("div.iframe.video").eq(0),
+				[0, 0],
+				video_size
+			);
+			set_dimensions(
+				$("div.iframe.chat").eq(0),
+				[0, video_size[1]*2],
+				[local_chat_max_width, 540]
+			);
+			set_dimensions(
+				$("div.iframe.video").eq(1),
+				[video_size[0], 0],
+				video_size
+			);
+			set_dimensions(
+				$("div.iframe.chat").eq(1),
+				[local_chat_max_width, video_size[1]*2],
+				[local_chat_max_width, 540]
+			);
+			set_dimensions(
+				$("div.iframe.video").eq(2),
+				[0, video_size[1]],
+				video_size
+			);
+			set_dimensions(
+				$("div.iframe.chat").eq(2),
+				[local_chat_max_width*2, video_size[1]*2],
+				[local_chat_max_width, 540]
+			);
+			set_dimensions(
+				$("div.iframe.video").eq(3),
+				video_size,
+				video_size
+			);
+			set_dimensions(
+				$("div.iframe.chat").eq(3),
+				[local_chat_max_width*3, video_size[1]*2],
+				[local_chat_max_width, 540]
+			);
+		}
 	}
 	$("div.iframe.chat").each(function(i,elem){
 		var chat_scale = 1;
@@ -620,7 +649,7 @@ $(function(){
 			$("#options").dialog("open");
 	});
 	$(window).resize(arrange_windows);
-	$("input[name=\"layout_algorithm\"]").change(arrange_windows);
+	$("input[name=\"layout_algorithm\"],#grid_x,#grid_y").change(arrange_windows);
 	
 	if(window.location.href == "https://kree-nickm.github.io/better-multi-twitch/")
 	{
