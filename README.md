@@ -9,7 +9,7 @@ You can also download it and use it on your computer if you feel like it. You ju
 
 ## Usage
 * Enter a streamer name or VOD ID number into the input box on the options popup. VODs do not have chat support.
-* Click anywhere outside of a stream or chat window to reopen the options popup. You can also press Escape, but this will not work if the most recent thing you clicked on was the inside of a chat or video.
+* The options window collapses to the top right of the screen. Click on the collapsed square to open it. The square turns invisible if left alone, but can still be clicked.
 * Placement algorithm determines where the page will place each window depending on your preferences:
 	* Minimize Blank Space will place and size windows to make sure as much of the browser window is used as possible by the chats and videos.
 	* Maximize Video Size will make sure the video windows are as large as possible while still keeping the desired chats on the page somewhere.
