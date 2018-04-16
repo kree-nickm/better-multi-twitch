@@ -1,9 +1,9 @@
-::-webkit-scrollbar { 
+/*::-webkit-scrollbar { 
     display: none; 
 }
 html {
 	overflow: -moz-scrollbars-none;
-}
+}*/
 body {
 	background: black;
 	margin: 0px;
@@ -53,7 +53,7 @@ div.stream-list-item button {
 	max-height: calc(100% - 1.5em);
 	max-width: calc(100% - 1.5em);
 	position: fixed;
-	overflow: scroll;
+	overflow: auto;
 	right: 1em;
 	top: 1em;
 	z-index: 1000;
@@ -75,6 +75,14 @@ div.stream-list-item button {
 }
 
 #menu.open {
+	background-color: rgba(200,200,200,0.85);
+	border: 2px outset rgba(50,50,50,0.85);
+	height: 3em;
+	width: 75ex;
+	transition: all 0.5s ease 0s;
+}
+
+#menu.expanded {
 	background-color: rgba(255,255,255,1);
 	border: 2px outset rgba(100,100,100,1);
 	height: auto;
@@ -86,22 +94,52 @@ div.stream-list-item button {
 	padding: 1ex;
 }
 
+#menu.closed>#expand_menu,
 #menu.closed>#shrink_menu,
 #menu.closed>#close_menu,
+#menu.closed>#small_options,
 #menu.closed>#options {
-	font-size: 0.1em;
+	display: none;
 	opacity: 0;
 	transition: all 0.2s ease-in 0s;
 }
 
-#menu.open>#shrink_menu,
+#menu.open>#expand_menu,
 #menu.open>#close_menu,
-#menu.open>#options {
-	font-size: 1em;
+#menu.open>#small_options {
 	opacity: 1;
 	transition: all 0.5s ease-out 0s;
 }
+#menu.open>#shrink_menu,
+#menu.open>#options {
+	display: none;
+	opacity: 0;
+}
+#menu.open>#expand_menu {
+	right: 1em;
+}
+#menu.open>#close_menu {
+	line-height: 2.5em;
+	position: absolute;
+		top: 0px;
+		right: 0px;
+		bottom: 0px;
+	float: right;
+}
 
+#menu.expanded>#shrink_menu,
+#menu.expanded>#close_menu,
+#menu.expanded>#small_options,
+#menu.expanded>#options {
+	opacity: 1;
+	transition: all 0.5s ease-out 0s;
+}
+#menu.expanded>#expand_menu {
+	display: none;
+	opacity: 0;
+}
+
+#expand_menu,
 #shrink_menu,
 #close_menu {
 	background-color: rgba(50,50,50,0);
@@ -111,6 +149,7 @@ div.stream-list-item button {
 	transition: all 0.3s linear 0s;
 }
 
+#expand_menu:hover,
 #shrink_menu:hover,
 #close_menu:hover {
 	background-color: rgba(50,50,50,0.4);

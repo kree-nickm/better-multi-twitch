@@ -637,8 +637,25 @@ $(function(){
 	});
 	$(window).resize(arrange_windows);
 	$("input[name=\"layout_algorithm\"],#grid_x,#grid_y").change(arrange_windows);
-	$("#menu").click(function(event){$(this).removeClass("closed").addClass("open");});
-	$("#close_menu").click(function(event){$(this).parent().removeClass("open").addClass("closed");return false;});
+	$("#menu").click(function(event){
+		if($(this).hasClass("closed"))
+		{
+			$(this).removeClass("closed").removeClass("expanded").addClass("open");
+			return false;
+		}
+	});
+	$("#close_menu").click(function(event){
+		$(this).parent().removeClass("open").removeClass("expanded").addClass("closed");
+		return false;
+	});
+	$("#shrink_menu").click(function(event){
+		$(this).parent().removeClass("closed").removeClass("expanded").addClass("open");
+		return false;
+	});
+	$("#expand_menu").click(function(event){
+		$(this).parent().removeClass("closed").removeClass("open").addClass("expanded");
+		return false;
+	});
 	
 	if(window.location.href == "https://kree-nickm.github.io/better-multi-twitch/")
 	{
