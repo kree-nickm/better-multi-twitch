@@ -1,9 +1,9 @@
-/*::-webkit-scrollbar { 
+::-webkit-scrollbar { 
     display: none; 
 }
 html {
 	overflow: -moz-scrollbars-none;
-}*/
+}
 body {
 	background: black;
 	margin: 0px;
@@ -68,7 +68,13 @@ div.stream-list-item button {
 	transition: all 1s ease-in 1s;
 }
 
-#menu.closed:hover {
+html:hover #menu.closed {
+	background-color: rgba(200,200,200,0.2);
+	border-color: rgba(50,50,50,0.2);
+	transition: all 1s linear 0s;
+}
+
+html body #menu.closed:hover {
 	background-color: rgba(200,200,200,0.85);
 	border-color: rgba(50,50,50,0.85);
 	transition: all 0.2s linear 0s;
