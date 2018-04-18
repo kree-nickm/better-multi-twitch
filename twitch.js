@@ -626,8 +626,8 @@ function stream_changed(stream)
 		$("#add_video_"+ stream).show();
 	else
 		$("#add_video_"+ stream).hide();
-	arrange_windows();
 	update_URL_bar();
+	setTimeout(arrange_windows, 1);
 }
 
 $(function(){
