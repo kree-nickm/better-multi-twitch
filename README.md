@@ -1,7 +1,5 @@
 # Better Multi-Twitch
-A multiple Twitch.tv stream viewer with robust viewing options, stream layouts, and usage of the legacy chat* so that FFZ and BTTV actually work like they used to. Streams will adapt to any browser window size and automatically change layouts to give you the best view of all the streams and chats that you have selected. Also allows you to manually place and resize any video or chat yourself (though these positions are lost upon page refresh).
-
-**I suspect one day Twitch will remove legacy chat as well, but until then, rejoice.*
+A multiple Twitch.tv stream viewer with robust viewing options and stream layouts. Streams will adapt to any browser window size and automatically change layouts to give you the best view of all the streams and chats that you have selected. Also allows you to manually place and resize any video or chat yourself (though these positions are lost upon page refresh).
 
 To actually use the app, go here: https://kree-nickm.github.io/better-multi-twitch/
 

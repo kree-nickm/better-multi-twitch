@@ -53,7 +53,8 @@ function add_stream(stream)
 	}
 	if(!skipchat && $("#chat_"+ stream).length == 0)
 	{
-		$("body").append('<div id="chat_'+ stream +'" class="iframe chat" style="height:720px;width:350px;"><iframe frameborder="0" scrolling="no" id="'+ stream +'" src="https://www.twitch.tv/'+ stream +'/chat?popout=" height="720" width="350"></iframe></div>');
+		//$("body").append('<div id="chat_'+ stream +'" class="iframe chat" style="height:720px;width:350px;"><iframe frameborder="0" scrolling="no" id="'+ stream +'" src="https://www.twitch.tv/'+ stream +'/chat?popout=" height="720" width="350"></iframe></div>'); // aaaand it's gone.
+		$("body").append('<div id="chat_'+ stream +'" class="iframe chat" style="height:720px;width:350px;"><iframe frameborder="0" scrolling="no" id="'+ stream +'" src="https://www.twitch.tv/embed/'+ stream +'/chat" height="720" width="350"></iframe></div>');
 		$("#stream_list").append('<div class="stream-list-item">chat_'+ stream +'<button id="remove_chat_'+ stream +'">Remove</button><button id="add_video_'+ stream +'">Add Video</button></div>');
 		$("#remove_chat_"+ stream).click(remove_window);
 		$("#add_video_"+ stream).click(function(e){add_stream(stream);});
