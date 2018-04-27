@@ -15,8 +15,9 @@ div.iframe {
 	padding: 10px;
 	position: absolute;
 }
-div.iframe:hover {
+div.iframe.ui-draggable:not(.ui-draggable-disabled):hover {
 	background: rgba(255,255,255,0.7);
+	cursor: move;
 }
 div.iframe .ui-resizable-handle {
 	background: rgba(255,255,255,0.5);
