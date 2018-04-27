@@ -8,15 +8,6 @@ body {
 	background: black;
 	margin: 0px;
 }
-div#background {
-	color: #333333;
-	font-family: sans-serif;
-	font-size: 30pt;
-	overflow: hidden;
-	position: absolute;
-	height: 100%;
-	z-index: -1;
-}
 div.iframe {
 	background: transparent;
 	box-sizing: content-box;
@@ -25,7 +16,7 @@ div.iframe {
 	position: absolute;
 }
 div.iframe:hover {
-	/*background: rgba(255,255,255,0.7);*/
+	background: rgba(255,255,255,0.7);
 }
 div.iframe .ui-resizable-handle {
 	background: rgba(255,255,255,0.5);
