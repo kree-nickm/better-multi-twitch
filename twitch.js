@@ -29,6 +29,7 @@ function update_URL_bar()
 	return true;
 }
 
+var stream_players = {};
 function add_stream(stream)
 {
 	var vod = !isNaN(stream);
@@ -46,14 +47,20 @@ function add_stream(stream)
 	}
 	if(!skipvideo && $("#video_"+ stream).length == 0)
 	{
-		$("body").append('<div id="video_'+ stream +'" class="iframe video" style="height:720px;width:1280px;"><iframe src="https://player.twitch.tv/?'+ (vod?'video':'channel') +'='+ stream +'" height="720" width="1280" frameborder="0" scrolling="no" allowfullscreen="false"></iframe></div>');
+		//$("body").append('<div id="video_'+ stream +'" class="iframe video" style="height:720px;width:1280px;"><iframe src="https://player.twitch.tv/?'+ (vod?'video':'channel') +'='+ stream +'" height="720" width="1280" frameborder="0" scrolling="no" allowfullscreen="false"></iframe></div>');
+		$("body").append('<div id="video_'+ stream +'" class="iframe video" style="height:720px;width:1280px;"></div>');
+		stream_players[stream] = new Twitch.Player("video_"+ stream,{
+			width: 1280,
+			height: 720,
+			channel: (vod ? "" : stream),
+			video: (vod ? stream : ""),
+		});
 		$("#stream_list").append('<div class="stream-list-item">video_'+ stream +'<button id="remove_video_'+ stream +'">Remove</button><button id="add_chat_'+ stream +'">Add Chat</button></div>');
 		$("#remove_video_"+ stream).click(remove_window);
 		$("#add_chat_"+ stream).click(function(e){add_stream(stream);});
 	}
 	if(!skipchat && $("#chat_"+ stream).length == 0)
 	{
-		//$("body").append('<div id="chat_'+ stream +'" class="iframe chat" style="height:720px;width:350px;"><iframe frameborder="0" scrolling="no" id="'+ stream +'" src="https://www.twitch.tv/'+ stream +'/chat?popout=" height="720" width="350"></iframe></div>'); // aaaand it's gone.
 		$("body").append('<div id="chat_'+ stream +'" class="iframe chat" style="height:720px;width:350px;"><iframe frameborder="0" scrolling="no" id="'+ stream +'" src="https://www.twitch.tv/embed/'+ stream +'/chat" height="720" width="350"></iframe></div>');
 		$("#stream_list").append('<div class="stream-list-item">chat_'+ stream +'<button id="remove_chat_'+ stream +'">Remove</button><button id="add_video_'+ stream +'">Add Video</button></div>');
 		$("#remove_chat_"+ stream).click(remove_window);
@@ -614,7 +621,9 @@ function remove_window()
 	$(this).parent().remove();
 	var temp = this.id.substring(7);
 	$("#"+ temp).remove();
-	stream_changed(temp.substring(temp.indexOf("_") + 1));
+	var stream = temp.substring(temp.indexOf("_") + 1);
+	stream_changed(stream);
+	delete stream_players[stream];
 }
 
 function stream_changed(stream)
@@ -628,7 +637,7 @@ function stream_changed(stream)
 	else
 		$("#add_video_"+ stream).hide();
 	update_URL_bar();
-	setTimeout(arrange_windows, 1);
+	setTimeout(arrange_windows, 100);
 }
 
 $(function(){
