@@ -503,7 +503,7 @@ function arrange_windows()
 		{
 			var video_size = get_widescreen_dimensions_by_height(Math.floor($(window).height()/2), Math.floor($(window).width()/2));
 			// chats need to be divided among the last quadrant of the window
-			local_chat_max_width = Math.min(chat_max_width, ($(window).width()-video_width) / 3 - 10);
+			local_chat_max_width = Math.min(chat_max_width, ($(window).width()-video_size[0]) / 3 - 10);
 			//TODO: triple streams gets pretty complicated with available space
 			set_dimensions(
 				$("div.iframe.video").eq(0),
