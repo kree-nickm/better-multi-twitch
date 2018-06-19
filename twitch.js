@@ -466,9 +466,9 @@ function arrange_windows()
 				layouts[1].set_video_position(1, [0, layouts[1].get_video_height(0)]);
 				get_best_layout(layouts).apply();
 			}
-			else if(num_chats == 1)
-			{
-			}
+			//else if(num_chats == 1)
+			//{
+			//}
 			else
 			{
 				local_chat_max_width = Math.min(chat_max_width, $(window).width() / 3);
