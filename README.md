@@ -11,6 +11,7 @@ You can also download it and use it on your computer if you feel like it. You ju
 * Placement algorithm determines where the page will place each window depending on your preferences:
 	* Minimize Blank Space will place and size windows to make sure as much of the browser window is used as possible by the chats and videos.
 	* Maximize Video Size will make sure the video windows are as large as possible while still keeping the desired chats on the page somewhere.
+	* Reactive Manual (__work-in-progress__) will allow you to drag each window around and attempt to automatically snap them into place depending on the size and position of all surrounding windows.
 	* Place Manually will disable the algorithms entirely so that they don't interfere with your own manual placement of the windows. When hovering over a chat or video, a border will appear. Drag this border to resize, and drag just inside the border to move. The windows will not react to changes in the browser window size.
 		* The windows will snap to a grid, and the Grid Size fields allow you to set the dimensions of the grid. The first number is the distance the windows will snap horizontally; the second is vertically. To disable snapping, simply set both values to 1.
 

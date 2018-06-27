@@ -10,33 +10,75 @@ body {
 }
 div.iframe {
 	background: transparent;
-	box-sizing: content-box;
 	display: inline-block;
-	padding: 10px;
 	position: absolute;
 }
-div.iframe.ui-draggable:not(.ui-draggable-disabled):hover {
-	background: rgba(255,255,255,0.7);
+div.iframe div.video-handle {
+	background: rgba(255,255,255,0);
+	box-sizing: border-box;
 	cursor: move;
+	display: block;
+	position: absolute;
+	top: calc(50% - 1.5em);
+	left: calc(50% - 1.5em);
+	width: 3em;
+	height: 3em;
+	z-index: 80;
+}
+div.iframe.ui-draggable:not(.ui-draggable-disabled):hover div.video-handle {
+	background: rgba(255,255,255,0.4);
+	border: 3px outset gray;
 }
 div.iframe .ui-resizable-handle {
-	background: rgba(255,255,255,0.5);
-}
-div.iframe .ui-resizable-handle:hover {
 	background: rgba(255,255,255,0.7);
+	border: 3px outset gray;
+	box-sizing: border-box;
 }
 div.iframe div.chat-header {
-	background: black;
+	background: gray;
 	border: 2px solid gray;
 	display: block;
 	position: absolute;
-	top: 10px;
-	left: 10px;
-	right: 10px;
+	top: 0px;
+	left: 0px;
+	right: 0px;
 	height: calc(5*0.625em);
-	z-index: 100;
+	z-index: 80;
 	box-sizing: border-box;
 	padding: 0.625ex;
+}
+div.iframe.ui-draggable:not(.ui-draggable-disabled):hover div.chat-header {
+	cursor: move;
+}
+.ui-resizable-n {
+	top: -3px;
+}
+.ui-resizable-e {
+	right: -3px;
+}
+.ui-resizable-s {
+	bottom: -3px;
+}
+.ui-resizable-w {
+	left: -3px;
+}
+.ui-resizable-se {
+	width: 9px;
+	height: 9px;
+	right: -3px;
+	bottom: -3px;
+}
+.ui-resizable-sw {
+	right: -3px;
+	bottom: -3px;
+}
+.ui-resizable-ne {
+	right: -3px;
+	bottom: -3px;
+}
+.ui-resizable-nw {
+	right: -3px;
+	bottom: -3px;
 }
 
 div.stream-list-item {

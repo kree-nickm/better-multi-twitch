@@ -54,6 +54,7 @@ function add_stream(stream)
 			channel: (vod ? "" : stream),
 			video: (vod ? stream : ""),
 		});
+		$("#video_"+ stream).append('<div id="video_handle_'+ stream +'" class="video-handle"></div>');
 		$("#stream_list").append('<div class="stream-list-item">video_'+ stream +'<button id="remove_video_'+ stream +'">Remove</button><button id="add_chat_'+ stream +'">Add Chat</button></div>');
 		$("#remove_video_"+ stream).click(remove_window);
 		$("#add_chat_"+ stream).click(function(e){add_stream(stream);});
@@ -91,6 +92,7 @@ function setup_windows()
 			$(element).prop("iframe", iframe);
 			$(element).resizable({
 				cancel: "input,textarea,button,select,option,iframe",
+				classes: {"ui-resizable-se": ""},
 				handles: "all",
 				distance: 0,
 				grid: [10,10],
@@ -128,8 +130,8 @@ function set_window_grid(dimensions)
 
 function set_dimensions(jqI, position, size)
 {
-	jqI.css("left", (position[0]-10)+"px")
-		.css("top", (position[1]-10)+"px")
+	jqI.css("left", (position[0]-0)+"px")
+		.css("top", (position[1]-0)+"px")
 		.css("width", size[0]+"px")
 		.css("height", size[1]+"px")
 		.prop("iframe")
@@ -165,7 +167,7 @@ function LayoutManager(num_videos, num_chats) {
 	this.num_chats = num_chats;
 	this.element_list = [];
 	for(var i=0; i<num_videos+num_chats; i++)
-		this.element_list.push([0, 0, 0, 0]);
+		this.element_list.push({x:0, y:0, w:0, h:0});
 	this.unused_space = -1;
 	this.element_changed = function(i) {
 		this.unused_space = -1;
@@ -178,9 +180,9 @@ function LayoutManager(num_videos, num_chats) {
 		if(i < this.num_videos && i >= 0)
 		{
 			if(pos[0] != null)
-				this.element_list[i][0] = pos[0];
+				this.element_list[i].x = pos[0];
 			if(pos[1] != null)
-				this.element_list[i][1] = pos[1];
+				this.element_list[i].y = pos[1];
 			if(!dontnotify)
 				this.element_changed(i);
 		}
@@ -189,9 +191,9 @@ function LayoutManager(num_videos, num_chats) {
 		if(i < this.num_videos && i >= 0)
 		{
 			if(size[0] != null && size[0] > -1)
-				this.element_list[i][2] = size[0];
+				this.element_list[i].w = size[0];
 			if(size[1] != null && size[1] > -1)
-				this.element_list[i][3] = size[1];
+				this.element_list[i].h = size[1];
 			if(!dontnotify)
 				this.element_changed(i);
 		}
@@ -204,9 +206,9 @@ function LayoutManager(num_videos, num_chats) {
 		if(i < this.num_chats && i >= 0)
 		{
 			if(pos[0] != null)
-				this.element_list[this.num_videos+i][0] = pos[0];
+				this.element_list[this.num_videos+i].x = pos[0];
 			if(pos[1] != null)
-				this.element_list[this.num_videos+i][1] = pos[1];
+				this.element_list[this.num_videos+i].y = pos[1];
 			if(!dontnotify)
 				this.element_changed(i);
 		}
@@ -217,9 +219,9 @@ function LayoutManager(num_videos, num_chats) {
 			if(size[0]/size[1] > chat_max_width/chat_min_height)
 				size[0] = size[1] * chat_max_width / chat_min_height;
 			if(size[0] != null && size[0] > -1)
-				this.element_list[this.num_videos+i][2] = size[0];
+				this.element_list[this.num_videos+i].w = size[0];
 			if(size[1] != null && size[1] > -1)
-				this.element_list[this.num_videos+i][3] = size[1];
+				this.element_list[this.num_videos+i].h = size[1];
 			if(!dontnotify)
 				this.element_changed(i);
 		}
@@ -230,7 +232,7 @@ function LayoutManager(num_videos, num_chats) {
 		var total = $(window).width() * $(window).height();
 		for(var i=0; i<this.num_videos+this.num_chats; i++)
 		{
-			total -= this.element_list[i][2] * this.element_list[i][3];
+			total -= this.element_list[i].w * this.element_list[i].h;
 		}
 		//TODO: calculate overlapping elements
 		this.unused_space = total;
@@ -241,7 +243,7 @@ function LayoutManager(num_videos, num_chats) {
 	}
 	this.get_video_x = function(i) {
 		if(i < this.num_videos && i >= 0)
-			return this.element_list[i][0];
+			return this.element_list[i].x;
 		else
 			return 0;
 	}
@@ -250,13 +252,13 @@ function LayoutManager(num_videos, num_chats) {
 	}
 	this.get_video_right = function(i) {
 		if(i < this.num_videos && i >= 0)
-			return this.element_list[i][0] + this.element_list[i][2];
+			return this.element_list[i].x + this.element_list[i].w;
 		else
 			return 0;
 	}
 	this.get_video_y = function(i) {
 		if(i < this.num_videos && i >= 0)
-			return this.element_list[i][1];
+			return this.element_list[i].y;
 		else
 			return 0;
 	}
@@ -265,31 +267,31 @@ function LayoutManager(num_videos, num_chats) {
 	}
 	this.get_video_bottom = function(i) {
 		if(i < this.num_videos && i >= 0)
-			return this.element_list[i][1] + this.element_list[i][3];
+			return this.element_list[i].y + this.element_list[i].h;
 		else
 			return 0;
 	}
 	this.get_video_width = function(i) {
 		if(i < this.num_videos && i >= 0)
-			return this.element_list[i][2];
+			return this.element_list[i].w;
 		else
 			return 0;
 	}
 	this.get_video_height = function(i) {
 		if(i < this.num_videos && i >= 0)
-			return this.element_list[i][3];
+			return this.element_list[i].h;
 		else
 			return 0;
 	}
 	this.get_video_space = function(i) {
 		if(this.num_videos > i && i >= 0)
-			return this.element_list[i][2] * this.element_list[i][3];
+			return this.element_list[i].w * this.element_list[i].h;
 		else
 			return 0;
 	}
 	this.get_chat_x = function(i) {
 		if(i < this.num_chats && i >= 0)
-			return this.element_list[this.num_videos+i][0];
+			return this.element_list[this.num_videos+i].x;
 		else
 			return 0;
 	}
@@ -298,13 +300,13 @@ function LayoutManager(num_videos, num_chats) {
 	}
 	this.get_chat_right = function(i) {
 		if(i < this.num_chats && i >= 0)
-			return this.element_list[this.num_videos+i][0] + this.element_list[this.num_videos+i][2];
+			return this.element_list[this.num_videos+i].x + this.element_list[this.num_videos+i].w;
 		else
 			return 0;
 	}
 	this.get_chat_y = function(i) {
 		if(i < this.num_chats && i >= 0)
-			return this.element_list[this.num_videos+i][1];
+			return this.element_list[this.num_videos+i].y;
 		else
 			return 0;
 	}
@@ -313,19 +315,19 @@ function LayoutManager(num_videos, num_chats) {
 	}
 	this.get_chat_bottom = function(i) {
 		if(i < this.num_chats && i >= 0)
-			return this.element_list[this.num_videos+i][1] + this.element_list[this.num_videos+i][3];
+			return this.element_list[this.num_videos+i].y + this.element_list[this.num_videos+i].h;
 		else
 			return 0;
 	}
 	this.get_chat_width = function(i) {
 		if(i < this.num_chats && i >= 0)
-			return this.element_list[this.num_videos+i][2];
+			return this.element_list[this.num_videos+i].w;
 		else
 			return 0;
 	}
 	this.get_chat_height = function(i) {
 		if(i < this.num_chats && i >= 0)
-			return this.element_list[this.num_videos+i][3];
+			return this.element_list[this.num_videos+i].h;
 		else
 			return 0;
 	}
@@ -335,13 +337,13 @@ function LayoutManager(num_videos, num_chats) {
 		for(var i=0; i<this.num_videos+this.num_chats; i++)
 		{
 			(i<this.num_videos ? jqVideos.eq(i) : jqChats.eq(i-this.num_videos))
-				.css("left", (this.element_list[i][0]-10)+"px")
-				.css("top", (this.element_list[i][1]-10)+"px")
-				.css("width", this.element_list[i][2]+"px")
-				.css("height", this.element_list[i][3]+"px")
+				.css("left", (this.element_list[i].x-0)+"px")
+				.css("top", (this.element_list[i].y-0)+"px")
+				.css("width", this.element_list[i].w+"px")
+				.css("height", this.element_list[i].h+"px")
 				.prop("iframe")
-					.attr("width", this.element_list[i][2])
-					.attr("height", this.element_list[i][3])
+					.attr("width", this.element_list[i].w)
+					.attr("height", this.element_list[i].h)
 			;
 		}
 	}
@@ -394,6 +396,13 @@ function arrange_windows()
 			.draggable("enable")
 			.resizable("enable");
 		set_window_grid([Math.max(1,parseInt($("#grid_x").val())|0), Math.max(1,parseInt($("#grid_y").val())|0)]);
+	}
+	else if($("#layout_semimanual:checked").length > 0)
+	{
+		$("div.iframe")
+			.draggable("enable")
+			.resizable("enable");
+		set_window_grid([1,1]);
 	}
 	else
 	{
@@ -503,7 +512,7 @@ function arrange_windows()
 		{
 			var video_size = get_widescreen_dimensions_by_height(Math.floor($(window).height()/2), Math.floor($(window).width()/2));
 			// chats need to be divided among the last quadrant of the window
-			local_chat_max_width = Math.min(chat_max_width, ($(window).width()-video_size[0]) / 3 - 10);
+			local_chat_max_width = Math.min(chat_max_width, ($(window).width()-video_size[0]) / 3 - 0);
 			//TODO: triple streams gets pretty complicated with available space
 			set_dimensions(
 				$("div.iframe.video").eq(0),
@@ -522,7 +531,7 @@ function arrange_windows()
 			);
 			set_dimensions(
 				$("div.iframe.chat").eq(1),
-				[$(window).width()-local_chat_max_width*2-10, video_size[1]],
+				[$(window).width()-local_chat_max_width*2-0, video_size[1]],
 				[local_chat_max_width, video_size[1]]
 			);
 			set_dimensions(
@@ -650,7 +659,9 @@ $(function(){
 	$("#menu").click(function(event){
 		if($(this).hasClass("closed"))
 		{
-			$(this).removeClass("closed").removeClass("expanded").addClass("open");
+			//$(this).removeClass("closed").removeClass("expanded").addClass("open");
+			$(this).removeClass("closed").removeClass("open").addClass("expanded");
+			$("#add_stream").focus();
 			return false;
 		}
 	});
@@ -659,11 +670,13 @@ $(function(){
 		return false;
 	});
 	$("#shrink_menu").click(function(event){
-		$(this).parent().removeClass("closed").removeClass("expanded").addClass("open");
+		//$(this).parent().removeClass("closed").removeClass("expanded").addClass("open");
+		$(this).parent().removeClass("open").removeClass("expanded").addClass("closed");
 		return false;
 	});
 	$("#expand_menu").click(function(event){
 		$(this).parent().removeClass("closed").removeClass("open").addClass("expanded");
+		$("#add_stream").focus();
 		return false;
 	});
 	
