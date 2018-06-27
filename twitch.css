@@ -208,3 +208,14 @@ html body #menu.closed:hover {
 #close_menu:hover {
 	background-color: rgba(50,50,50,0.4);
 }
+
+div#coverup {
+	display: none;
+	background: none;
+	position: fixed;
+	top: 0px;
+	left: 0px;
+	right: 0px;
+	bottom: 0px;
+	z-index: 50;
+}

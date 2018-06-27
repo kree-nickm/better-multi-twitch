@@ -83,7 +83,12 @@ function setup_windows()
 				distance: 0,
 				grid: [10,10],
 				stack: "div.iframe",
-				iframeFix: true
+				start: function(event, ui){
+					$("div#coverup").css("display", "block");
+				},
+				stop: function(event, ui){
+					$("div#coverup").css("display", "none");
+				},
 			});
 		}
 		if(!$(element).hasClass("ui-resizable"))
@@ -100,6 +105,10 @@ function setup_windows()
 				start: function(event, ui){
 					$(element).prop("height_buffer", ui.size.height - iframe.attr("height"));
 					$(element).prop("width_buffer", ui.size.width - iframe.attr("width"));
+					$("div#coverup").css("display", "block");
+				},
+				stop: function(event, ui){
+					$("div#coverup").css("display", "none");
 				},
 				resize: function(event, ui){
 					$(element).prop("iframe").attr("height", ui.size.height-$(element).prop("height_buffer")).attr("width", ui.size.width-$(element).prop("width_buffer"));
