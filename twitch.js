@@ -172,6 +172,13 @@ function get_widescreen_dimensions_by_height(height, width_max)
 }
 
 function LayoutManager(num_videos, num_chats) {
+	this.WINDOW = 10;
+	this.CHAT = 11;
+	this.VIDEO = 12;
+	this.TOP = 50;
+	this.RIGHT = 51;
+	this.BOTTOM = 52;
+	this.LEFT = 53;
 	this.num_videos = num_videos;
 	this.num_chats = num_chats;
 	this.element_list = [];
@@ -234,6 +241,22 @@ function LayoutManager(num_videos, num_chats) {
 			if(!dontnotify)
 				this.element_changed(i);
 		}
+	}
+	this.set_window_border = function(typeA, iA, sideA, typeB, iB, sideB) {
+		if(typeA == layout.CHAT && iA < this.num_chats && iA >= 0)
+			a = this.num_videos + iA;
+		else if(typeA == layout.VIDEO && iA < this.num_videos && iA >= 0)
+			a = iA;
+		else
+			return;
+		if(typeB == layout.WINDOW)
+		{}
+		else if(typeB == layout.CHAT && iB < this.num_chats && iB >= 0)
+			b = this.num_videos + iB;
+		else if(typeB == layout.VIDEO && iB < this.num_videos && iB >= 0)
+			b = iB;
+		else
+			return;
 	}
 	this.get_unused_space = function() {
 		if(this.unused_space > -1)
@@ -409,7 +432,7 @@ function arrange_windows()
 	else if($("#layout_semimanual:checked").length > 0)
 	{
 		$("div.iframe")
-			.draggable("enable")
+			.draggable("disable")
 			.resizable("enable");
 		set_window_grid([1,1]);
 	}
@@ -426,6 +449,12 @@ function arrange_windows()
 			{
 				layout.set_chat_size(i, [local_chat_max_width, $(window).height()]);
 				layout.set_chat_position(i, [(i==0?0:layout.get_chat_right(i-1)), 0]);
+				layout.set_window_border(layout.CHAT, i, layout.TOP, layout.WINDOW);
+				layout.set_window_border(layout.CHAT, i, layout.BOTTOM, layout.WINDOW);
+				if(i == 0)
+					layout.set_window_border(layout.CHAT, i, layout.LEFT, layout.WINDOW);
+				else
+					layout.set_window_border(layout.CHAT, i, layout.LEFT, layout.CHAT, i-1, layout.RIGHT);
 			}
 			layout.apply();
 		}

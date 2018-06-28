@@ -14,10 +14,11 @@ div.iframe {
 	position: absolute;
 }
 div.iframe div.video-handle {
-	background: rgba(255,255,255,0);
+	background: rgba(255,255,255,0.4);
+	border: 3px outset gray;
 	box-sizing: border-box;
 	cursor: move;
-	display: block;
+	display: none;
 	position: absolute;
 	top: calc(50% - 1.5em);
 	left: calc(50% - 1.5em);
@@ -26,8 +27,7 @@ div.iframe div.video-handle {
 	z-index: 80;
 }
 div.iframe.ui-draggable:not(.ui-draggable-disabled):hover div.video-handle {
-	background: rgba(255,255,255,0.4);
-	border: 3px outset gray;
+	display: block;
 }
 div.iframe .ui-resizable-handle {
 	background: rgba(255,255,255,0.7);
