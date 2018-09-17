@@ -705,7 +705,7 @@ function sync_streams_step2()
 	{
 		stream_players[channel].play();
 	}
-	setTimeout(sync_streams_step3, 1000);
+	setTimeout(sync_streams_step3, 2000);
 }
 
 function sync_streams_step3()
@@ -714,12 +714,12 @@ function sync_streams_step3()
 	var max = 0;
 	for(var channel in stream_players)
 	{
-		stream_players[channel].multi_delay = stream_players[channel].getPlaybackStats().bufferSize;
+		stream_players[channel].multi_delay = stream_players[channel].getPlaybackStats().hlsLatencyEncoder;
 		if(stream_players[channel].multi_delay > max)
 			max = stream_players[channel].multi_delay;
 	}
-	setTimeout(sync_streams_step4, max*1000-500, max);
-}
+	setTimeout(sync_streams_step4, Math.round(max*1000-1500), max);
+}	
 
 function sync_streams_step4(max)
 {
@@ -730,6 +730,68 @@ function sync_streams_step4(max)
 			stream_players[channel].seek(stream_players[channel].getCurrentTime() - (max - stream_players[channel].multi_delay));
 	}
 	//console.log(laststats.bufferSize-stats.bufferSize, laststats.hlsLatencyBroadcaster-stats.hlsLatencyBroadcaster, laststats.hlsLatencyEncoder-stats.hlsLatencyEncoder);
+}
+
+var testdata = [];
+function logtest()
+{
+	testdata.push([
+		stream_players.lirik.getPlaybackStats().bufferSize,
+		stream_players.lirik.getPlaybackStats().hlsLatencyBroadcaster,
+		stream_players.lirik.getPlaybackStats().hlsLatencyEncoder]
+	);
+}
+function test()
+{
+	var max = [0,0,0];
+	var min = [999,999,999];
+	var sum = [0,0,0];
+	for(var d in testdata)
+	{
+		sum[0] += testdata[d][0];
+		sum[1] += testdata[d][1];
+		sum[2] += testdata[d][2];
+		if(testdata[d][0] > max[0])
+			max[0] = testdata[d][0];
+		if(testdata[d][1] > max[1])
+			max[1] = testdata[d][1];
+		if(testdata[d][2] > max[2])
+			max[2] = testdata[d][2];
+		if(testdata[d][0] < min[0])
+			min[0] = testdata[d][0];
+		if(testdata[d][1] < min[1])
+			min[1] = testdata[d][1];
+		if(testdata[d][2] < min[2])
+			min[2] = testdata[d][2];
+	}
+	var rng = [
+		max[0]-min[0],
+		max[1]-min[1],
+		max[2]-min[2],
+	];
+	var avg = [
+		sum[0]/testdata.length,
+		sum[1]/testdata.length,
+		sum[2]/testdata.length,
+	];
+	var dev = [0,0,0];
+	for(var d in testdata)
+	{
+		dev[0] += Math.pow(testdata[d][0]-avg[0],2);
+		dev[1] += Math.pow(testdata[d][1]-avg[1],2);
+		dev[2] += Math.pow(testdata[d][2]-avg[2],2);
+	}
+	var stddev = [
+		Math.sqrt(dev[0]/testdata.length),
+		Math.sqrt(dev[1]/testdata.length),
+		Math.sqrt(dev[2]/testdata.length),
+	];
+	console.log({
+		min: min,
+		max: max,
+		rng: rng,
+		stddev: stddev,
+	});
 }
 
 $(function(){
