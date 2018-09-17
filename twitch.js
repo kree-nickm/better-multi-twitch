@@ -687,6 +687,14 @@ function stream_changed(stream)
 	setTimeout(arrange_windows, 100);
 }
 
+function sync_streams()
+{
+	for(var channel in stream_players)
+	{
+		console.log(stream_players[channel].getPlaybackStats());
+	}
+}
+
 $(function(){
 	$("#add_stream").blur(add_stream_input).keydown(function(event){
 		if(event.keyCode == 13)
