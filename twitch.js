@@ -733,12 +733,12 @@ function sync_streams_step4(max)
 }
 
 var testdata = [];
-function logtest()
+function logtest(channel)
 {
 	testdata.push([
-		stream_players.lirik.getPlaybackStats().bufferSize,
-		stream_players.lirik.getPlaybackStats().hlsLatencyBroadcaster,
-		stream_players.lirik.getPlaybackStats().hlsLatencyEncoder]
+		stream_players[channel].getPlaybackStats().bufferSize,
+		stream_players[channel].getPlaybackStats().hlsLatencyBroadcaster,
+		stream_players[channel].getPlaybackStats().hlsLatencyEncoder]
 	);
 }
 function test()
