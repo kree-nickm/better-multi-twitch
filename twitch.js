@@ -689,10 +689,15 @@ function stream_changed(stream)
 
 function sync_streams()
 {
+	var laststats = null;
+	var stats = null;
 	for(var channel in stream_players)
 	{
-		console.log(stream_players[channel].getPlaybackStats());
+		laststats = stats;
+		stats = stream_players[channel].getPlaybackStats();
+		console.log(stats.bufferSize, stats.hlsLatencyBroadcaster, stats.hlsLatencyEncoder);
 	}
+	console.log(laststats.bufferSize-stats.bufferSize, laststats.hlsLatencyBroadcaster-stats.hlsLatencyBroadcaster, laststats.hlsLatencyEncoder-stats.hlsLatencyEncoder);
 }
 
 $(function(){
