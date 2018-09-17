@@ -733,6 +733,7 @@ $(function(){
 	});
 	$(window).resize(arrange_windows);
 	$("input[name=\"layout_algorithm\"],#grid_x,#grid_y").change(arrange_windows);
+	$("#sync_streams").click(sync_streams);
 	$("#menu").click(function(event){
 		if($(this).hasClass("closed"))
 		{
