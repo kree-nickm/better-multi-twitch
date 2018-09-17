@@ -687,17 +687,43 @@ function stream_changed(stream)
 	setTimeout(arrange_windows, 100);
 }
 
+var sync_timeout = setTimeout(function(){}, 0);
 function sync_streams()
 {
-	var laststats = null;
-	var stats = null;
+	clearTimeout(sync_timeout);
 	for(var channel in stream_players)
 	{
-		laststats = stats;
-		stats = stream_players[channel].getPlaybackStats();
-		console.log(stats.bufferSize, stats.hlsLatencyBroadcaster, stats.hlsLatencyEncoder);
+		stream_players[channel].pause();
 	}
-	console.log(laststats.bufferSize-stats.bufferSize, laststats.hlsLatencyBroadcaster-stats.hlsLatencyBroadcaster, laststats.hlsLatencyEncoder-stats.hlsLatencyEncoder);
+	setTimeout(sync_streams_step2, 250);
+}
+
+function sync_streams_step2()
+{
+	clearTimeout(sync_timeout);
+	for(var channel in stream_players)
+	{
+		stream_players[channel].play();
+	}
+	setTimeout(sync_streams_step3, 1500);
+}
+
+function sync_streams_step3()
+{
+	clearTimeout(sync_timeout);
+	var max = 0;
+	for(var channel in stream_players)
+	{
+		stream_players[channel].multi_delay = stream_players[channel].getPlaybackStats().bufferSize;
+		if(stream_players[channel].multi_delay > max)
+			max = stream_players[channel].multi_delay;
+	}
+	for(var channel in stream_players)
+	{
+		if(stream_players[channel].multi_delay < max)
+			stream_players[channel].seek(stream_players[channel].getCurrentTime() - (max - stream_players[channel].multi_delay));
+	}
+	//console.log(laststats.bufferSize-stats.bufferSize, laststats.hlsLatencyBroadcaster-stats.hlsLatencyBroadcaster, laststats.hlsLatencyEncoder-stats.hlsLatencyEncoder);
 }
 
 $(function(){
