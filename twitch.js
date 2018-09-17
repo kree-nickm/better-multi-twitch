@@ -705,7 +705,7 @@ function sync_streams_step2()
 	{
 		stream_players[channel].play();
 	}
-	setTimeout(sync_streams_step3, 1500);
+	setTimeout(sync_streams_step3, 1000);
 }
 
 function sync_streams_step3()
@@ -718,6 +718,12 @@ function sync_streams_step3()
 		if(stream_players[channel].multi_delay > max)
 			max = stream_players[channel].multi_delay;
 	}
+	setTimeout(sync_streams_step4, max*1000-500, max);
+}
+
+function sync_streams_step4(max)
+{
+	clearTimeout(sync_timeout);
 	for(var channel in stream_players)
 	{
 		if(stream_players[channel].multi_delay < max)
