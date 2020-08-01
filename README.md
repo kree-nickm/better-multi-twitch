@@ -19,3 +19,6 @@ You can also download it and use it on your computer if you feel like it. You ju
 Should work with up to 4 streams, but may be buggy as I haven't rewritten the code for any more than 1 stream to use the new layout algorithms. Yeah, yeah, "multi" Twitch LUL; I was literally in the middle of rewriting the app when I decided to upload it to GitHub, so it is what it is. I haven't decided on how the layout algorithms will work for additional streams yet.
 
 No matter how many windows are visible, manual placement should work, so if you have a lot of streams to watch and the algorithms aren't working for you, just use manual placement. Annoying, but that's how it is for now.
+
+## Status Aug 1, 2020
+Development of this has ceased on GitHub. I've integrated it with a larger Twitch-related project that I'm not ready to link here, and it is not on GitHub.
